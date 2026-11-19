@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>I Love You Heart</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #000; overflow: hidden; }
+  .scene {
+    position: absolute; inset: 0;
+    display: grid; place-items: center;
+    perspective: 900px;
+  }
+  .heart {
+    position: relative;
+    width: 0; height: 0;
+    transform-style: preserve-3d;
+    animation: spin 9s linear infinite;
+  }
+  .heart__item {
+    position: absolute;
+    left: 0; top: 0;
+    white-space: nowrap;
+    font: 700 11px/1 monospace;
+    color: #ff8fb7;
+    text-shadow: 0 0 6px #ff4d8d, 0 0 14px #ff2d75;
+    transform-origin: center;
+    animation: glow 2s ease-in-out infinite alternate;
+    animation-delay: calc(var(--i) * -0.05s);
+  }
+  @keyframes spin { to { transform: rotateY(360deg); } }
+  @keyframes glow { from { opacity: .55; } to { opacity: 1; } }
+</style>
+</head>
+<body>
+<div class="scene"><div class="heart" id="heart"></div></div>
+
+<script>
+  const heart = document.getElementById("heart");
+  const TEXT = "I love you";
+  const COUNT = 90;      // items along the curve
+  const LAYERS = 5;      // thickness of the ribbon
+  const GAP = 5;         // space between layers
+  const size = Math.min(innerWidth, innerHeight) / 40;
+
+  let n = 0;
+  for (let k = 0; k < COUNT; k++) {
+    const t = (k / COUNT) * Math.PI * 2;
+    const x = 16 * Math.sin(t) ** 3;
+    const y = 13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t);
+    const dx = 48 * Math.sin(t) ** 2 * Math.cos(t);
+    const dy = -13 * Math.sin(t) + 10 * Math.sin(2 * t) + 6 * Math.sin(3 * t) + 4 * Math.sin(4 * t);
+    const angle = Math.atan2(-dy, dx) * 180 / Math.PI;
+
+    for (let l = 0; l < LAYERS; l++) {
+      const z = (l - (LAYERS - 1) / 2) * GAP;
+      const el = document.createElement("span");
+      el.className = "heart__item";
+      el.textContent = TEXT;
+      el.style.setProperty("--i", n++);
+      el.style.transform =
+        `translate3d(${x * size}px, ${-y * size}px, ${z}px) rotate(${angle}deg) translate(-50%, -50%)`;
+      heart.appendChild(el);
+    }
+  }
+</script>
+</body>
+</html>
